@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { Wallet } from 'ethers';
 import { sendEther } from './utils';
 
-describe('Recovery', function () {
+describe('Denial', function () {
   let owner: Wallet;
 
   it('attack', async function () {

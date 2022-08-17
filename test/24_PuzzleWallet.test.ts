@@ -4,7 +4,7 @@ import { impersonateAndInjectEther, simpleEncode } from './utils';
 import { expect } from 'chai';
 
 describe('PuzzleWallet', function () {
-  it.only('attack', async function () {
+  it('attack', async function () {
     const target = '0x78aed5C385c6f5C3f9Ce5D12B90DD2b898D71f82';
     const address = '0x07b05D3A1ed958944033060d058b8F0771ad1A6e';
     const sender = await impersonateAndInjectEther(address);

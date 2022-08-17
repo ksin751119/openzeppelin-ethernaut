@@ -21,3 +21,12 @@ export async function impersonateAndInjectEther(address: string) {
   _impersonateAndInjectEther(address);
   return await (ethers as any).getSigner(address);
 }
+
+export function simpleEncode(_func: string, params: any) {
+  const func = 'function ' + _func;
+  const abi = [func];
+  const iface = new ethers.utils.Interface(abi);
+  const data = iface.encodeFunctionData(_func, params);
+
+  return data;
+}

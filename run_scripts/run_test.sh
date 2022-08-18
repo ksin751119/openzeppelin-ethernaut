@@ -9,4 +9,5 @@ URL=https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161
 # FORK_URL=$URL npx hardhat test --network hardhat ./test/22_Dex.test.ts
 # FORK_URL=$URL npx hardhat test --network hardhat ./test/23_DexTwo.test.ts
 # FORK_URL=$URL npx hardhat test --network hardhat ./test/24_PuzzleWallet.test.ts
-FORK_URL=$URL npx hardhat test --network hardhat ./test/25_Motorbike.test.ts
+# FORK_URL=$URL npx hardhat test --network hardhat ./test/25_Motorbike.test.ts
+FORK_URL=$URL npx hardhat test --network hardhat ./test/26_DoubleEntryPoint.test.ts
